@@ -100,16 +100,16 @@ noisyuploaderv2/
 
 **Langkah deploy (dua opsi):**
 
-**Opsi A — All-in-Vercel** (cocok untuk file kecil, ±4MB di plan gratis):
-1. Import repo ini di Vercel — `vercel.json` sudah disiapkan (build `npm run build`, API di `api/index.js`).
-2. Set environment variable `TRUST_PROXY=true` (wajib agar rate limit memakai IP asli pengguna).
+**Opsi A — All-in-Vercel** ⚠️ *upload tidak andal*:
+- Halaman & aset jalan sempurna, tapi **Catbox memblokir IP serverless Vercel** (koneksi di-reset / "Invalid uploader"). Upload besar maupun kecil kemungkinan besar gagal.
+- Cocok hanya jika upload tidak dipakai atau API diletakkan di tempat lain.
 
-**Opsi B — Frontend di Vercel + API di Render/Railway/VPS** (file besar hingga 200MB):
-1. Deploy `server.js` sebagai layanan Node (atur `PORT` sesuai platform), set `TRUST_PROXY=true`.
+**Opsi B — Frontend di Vercel + API di Render/Railway/VPS** ✅ *direkomendasikan*:
+1. Deploy `server.js` sebagai layanan Node (Render: start command `node server.js`, env `TRUST_PROXY=true`; `PORT` diisi otomatis platform).
 2. Di Vercel, set env build `VITE_API_BASE=https://url-api-anda`.
-3. Import repo di Vercel — frontend akan memanggil API di URL tersebut.
+3. Import repo di Vercel — frontend memanggil API di URL tersebut, upload berfungsi normal.
 
-> Catatan: plan gratis Vercel membatasi body request serverless ±4.5MB — upload besar wajib lewat opsi B.
+> Catatan: plan gratis Vercel juga membatasi body request serverless ±4.5MB — alasan lain upload besar sebaiknya lewat opsi B.
 
 ## ⚠️ Catatan
 
