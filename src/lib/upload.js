@@ -44,7 +44,7 @@ export function uploadFile(file, onProgress) {
     fd.append('file', file, file.name);
     const xhr = new XMLHttpRequest();
     xhr.open('POST', API_BASE + '/api/catbox-upload');
-    xhr.timeout = 120000;
+    xhr.timeout = 150000;
 
     xhr.upload.addEventListener('progress', (e) => {
       if (!e.lengthComputable) return;

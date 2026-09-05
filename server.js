@@ -244,32 +244,25 @@ app.post('/api/catbox-upload', rateLimit({ windowMs: 60000, max: 10 }), catboxUp
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'File wajib diisi (maks 200MB)' });
     const t0 = Date.now();
-    // Catbox kadang membalas 200 kosong (flaky) dan kadang memutus koneksi dari IP datacenter
-    // (mis. serverless Vercel). Strategi: coba langsung, lalu fallback lewat proxy pool.
-    const proxies = await fetchProxies();
+    // Catbox kadang membalas 200 kosong (flaky sesaat). Retry langsung 3x —
+    // TANPA proxy: proxy publik lambat untuk file besar dan IP-nya ditolak Catbox.
     let url = '';
     let lastRaw = '';
     for (let attempt = 1; attempt <= 3; attempt++) {
       const form = new FormData();
       form.append('reqtype', 'fileupload');
       form.append('fileToUpload', fs.createReadStream(tmpPath), { filename: req.file.originalname || 'file' });
-      const viaProxy = attempt > 1 && proxies.length > 0;
-      const cfg = {
-        headers: { ...form.getHeaders(), 'User-Agent': CATBOX_UA, Referer: 'https://catbox.moe/' },
-        // timeout ketat agar muat dalam batas durasi serverless (Vercel hobby 60s)
-        timeout: viaProxy ? 15000 : 20000,
-        maxBodyLength: Infinity,
-        maxContentLength: Infinity,
-        validateStatus: () => true
-      };
-      if (viaProxy) {
-        cfg.proxy = proxies[Math.floor(Math.random() * proxies.length)];
-      }
       let r;
       try {
-        r = await axios.post(CATBOX_URL, form, cfg);
+        r = await axios.post(CATBOX_URL, form, {
+          headers: { ...form.getHeaders(), 'User-Agent': CATBOX_UA, Referer: 'https://catbox.moe/' },
+          timeout: 35000,
+          maxBodyLength: Infinity,
+          maxContentLength: Infinity,
+          validateStatus: () => true
+        });
       } catch (e) {
-        lastRaw = (viaProxy ? 'via-proxy ' : '') + (e.code || e.message);
+        lastRaw = e.code || e.message;
         if (attempt < 3) {
           await new Promise((res) => setTimeout(res, 1000));
           continue;
@@ -279,7 +272,6 @@ app.post('/api/catbox-upload', rateLimit({ windowMs: 60000, max: 10 }), catboxUp
       const candidate = (typeof r.data === 'string' ? r.data.trim() : '').split('\n')[0];
       if (r.status === 200 && candidate.startsWith('http')) {
         url = candidate;
-        if (viaProxy) console.log('[catbox] sukses via proxy');
         break;
       }
       lastRaw = String(r.data || '').slice(0, 300);
