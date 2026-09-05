@@ -74,7 +74,11 @@ export function uploadFile(file, onProgress) {
     });
 
     xhr.addEventListener('timeout', () => {
-      resolve({ ok: false, message: 'Timeout 2 menit (file besar/koneksi lambat). Coba file lebih kecil.' });
+      resolve({
+        ok: false,
+        message:
+          'Timeout. Server mungkin sedang tidur (hosting gratis) dan butuh waktu bangun — tunggu beberapa detik lalu coba lagi.',
+      });
     });
 
     xhr.send(fd);
