@@ -247,17 +247,29 @@ app.post('/api/catbox-upload', rateLimit({ windowMs: 60000, max: 10 }), catboxUp
     form.append('reqtype', 'fileupload');
     form.append('fileToUpload', fs.createReadStream(tmpPath), { filename: req.file.originalname || 'file' });
     const t0 = Date.now();
-    const r = await axios.post(CATBOX_URL, form, {
-      headers: { ...form.getHeaders(), 'User-Agent': CATBOX_UA, Referer: 'https://catbox.moe/' },
-      timeout: 120000,
-      maxBodyLength: Infinity,
-      maxContentLength: Infinity,
-      validateStatus: () => true
-    });
+    // Catbox kadang membalas 200 dengan body kosong (flaky/rate-limit sesaat).
+    // Retry 3x dengan jeda singkat; ulangan hampir selalu sukses.
+    let url = '';
+    let lastRaw = '';
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const r = await axios.post(CATBOX_URL, form, {
+        headers: { ...form.getHeaders(), 'User-Agent': CATBOX_UA, Referer: 'https://catbox.moe/' },
+        timeout: 120000,
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
+        validateStatus: () => true
+      });
+      const candidate = (typeof r.data === 'string' ? r.data.trim() : '').split('\n')[0];
+      if (r.status === 200 && candidate.startsWith('http')) {
+        url = candidate;
+        break;
+      }
+      lastRaw = String(r.data || '').slice(0, 300);
+      if (attempt < 3) await new Promise((res) => setTimeout(res, 1500));
+    }
     const elapsedMs = Date.now() - t0;
-    const url = (typeof r.data === 'string' ? r.data.trim() : '').split('\n')[0];
-    if (r.status !== 200 || !url || !url.startsWith('http')) {
-      return res.status(502).json({ success: false, message: 'Catbox menolak upload', raw: String(r.data || '').slice(0, 300) });
+    if (!url) {
+      return res.status(502).json({ success: false, message: 'Catbox menolak upload', raw: lastRaw });
     }
     let remoteSize = null;
     let remoteType = null;
