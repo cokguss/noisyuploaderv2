@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kebijakan Privasi — Noisy Uploader</title>
+<meta name="description" content="Kebijakan privasi Noisy Uploader Online.">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<link rel="stylesheet" href="/styles.css?v=4">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true"><i class="ph-bold ph-cloud-arrow-up"></i></span>
+      <span class="brand-text">Noisy <strong>Uploader</strong></span>
+    </a>
+    <div class="nav-act">
+      <button id="themeBtn" class="icon-btn" aria-label="Ganti tema"><i class="ph-bold ph-moon"></i></button>
+      <a href="/" class="btn btn-ghost"><i class="ph-bold ph-arrow-left"></i> Beranda</a>
+    </div>
+  </div>
+</header>
+<main class="wrap legal">
+  <p class="eyebrow"><i class="ph-bold ph-shield-check"></i> Kebijakan privasi</p>
+  <h1>Kebijakan Privasi.</h1>
+  <p class="lead">Terakhir diperbarui: September 2026.</p>
+  <div class="card legal-card">
+    <h2>Data yang kami proses</h2>
+    <p>File yang Anda upload diteruskan oleh server kami ke Catbox.moe untuk dihosting. Server kami <strong>tidak menyimpan</strong> isi file setelah upload selesai. File sementara dihapus otomatis.</p>
+    <h2>Riwayat di perangkat Anda</h2>
+    <p>Riwayat link upload disimpan di <span class="mono">localStorage</span> browser Anda sendiri, bukan di server kami. Menghapus riwayat atau data browser akan menghilangkannya.</p>
+    <h2>Pihak ketiga</h2>
+    <p>File yang diupload tunduk pada kebijakan Catbox.moe sebagai penyedia hosting. Kami tidak membagikan data Anda ke pihak lain untuk iklan atau pelacakan.</p>
+    <h2>Keamanan</h2>
+    <p>Kami membatasi ukuran file, memblokir ekstensi berbahaya, dan memakai koneksi terenkripsi. Meski begitu, jangan upload data sangat sensitif karena link bersifat publik bagi siapa pun yang memilikinya.</p>
+    <h2>Kontak</h2>
+    <p>Pertanyaan soal privasi dapat disampaikan melalui kanal resmi tempat aplikasi ini dipublikasikan.</p>
+  </div>
+</main>
+<footer class="footer">
+  <div class="wrap foot-in">
+    <p class="brand-text">Noisy <strong>Uploader</strong></p>
+    <div class="foot-links">
+      <a href="/privacy.html" target="_blank" rel="noopener">Kebijakan Privasi</a>
+      <span aria-hidden="true">•</span>
+      <a href="/terms.html" target="_blank" rel="noopener">Ketentuan Layanan</a>
+    </div>
+    <p class="mono foot-meta">© 2026 Noisy Uploader • v1.0</p>
+  </div>
+</footer>
+<script>
+(function(){var t=null;try{t=localStorage.getItem('noisy-theme')}catch(e){}
+if(!t&&matchMedia('(prefers-color-scheme: light)').matches)t='light';
+document.documentElement.dataset.theme=t||'dark';
+var b=document.getElementById('themeBtn');
+function paint(){b.innerHTML=document.documentElement.dataset.theme==='dark'?'<i class="ph-bold ph-moon"></i>':'<i class="ph-bold ph-sun"></i>'}
+paint();
+b.addEventListener('click',function(){var n=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('noisy-theme',n)}catch(e){}paint()})})();
+</script>
+</body>
+</html>

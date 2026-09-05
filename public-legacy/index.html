@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Noisy Uploader Online — Upload File, Dapat Link Instan</title>
+<meta name="description" content="Upload gambar, video, audio, dan dokumen. Dapat link Catbox permanen dalam detik. Gratis, tanpa daftar.">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<link rel="stylesheet" href="/styles.css?v=4">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="Noisy Uploader Online">
+      <span class="brand-mark" aria-hidden="true"><i class="ph-bold ph-cloud-arrow-up"></i></span>
+      <span class="brand-text">Noisy <strong>Uploader</strong></span>
+    </a>
+    <nav class="nav-links" aria-label="Navigasi utama">
+      <a href="#upload">Upload</a>
+      <a href="#cara">Cara kerja</a>
+      <a href="#format">Format</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-act">
+      <button id="themeBtn" class="icon-btn" aria-label="Ganti tema"><i class="ph-bold ph-moon"></i></button>
+      <a href="#upload" class="btn btn-primary">Upload File</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO split -->
+  <section class="hero wrap">
+    <div class="hero-copy">
+      <p class="eyebrow"><i class="ph-bold ph-bolt"></i> File uploader online</p>
+      <h1>Upload file, dapat link instan.</h1>
+      <p class="sub">Gambar, video, audio, dan dokumen hingga 200MB. Link permanen siap dibagikan.</p>
+      <div class="cta-row">
+        <a href="#upload" class="btn btn-primary btn-lg">Upload Sekarang</a>
+        <a href="#format" class="btn btn-ghost btn-lg">Lihat Format</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="card demo-card" aria-label="Contoh hasil upload">
+        <div class="demo-file">
+          <span class="demo-ico"><i class="ph-bold ph-file-image"></i></span>
+          <div class="demo-meta">
+            <p class="demo-name">liburan-bali.jpg</p>
+            <p class="mono demo-sub">2,4 MB • JPG</p>
+          </div>
+          <span class="demo-ok"><i class="ph-bold ph-check-circle"></i></span>
+        </div>
+        <div class="demo-bar" aria-hidden="true"><span style="width:100%"></span></div>
+        <div class="demo-link">
+          <span class="mono" id="demoUrl">https://files.catbox.moe/p3dqxc.jpg</span>
+          <button class="btn btn-primary btn-sm" id="demoCopy" type="button"><i class="ph-bold ph-copy"></i> Salin</button>
+        </div>
+        <p class="mono demo-note" id="demoNote">Contoh link. Klik Salin untuk coba.</p>
+      </div>
+      <p class="hero-cap"><i class="ph-bold ph-check-circle"></i> Dihosting di Catbox.moe, link permanen.</p>
+    </div>
+  </section>
+
+  <!-- STRIP di bawah hero -->
+  <section class="strip wrap" aria-label="Format dan batas">
+    <div class="strip-in">
+      <span class="strip-item"><i class="ph-bold ph-file-image"></i> Gambar</span>
+      <span class="strip-item"><i class="ph-bold ph-file-video"></i> Video</span>
+      <span class="strip-item"><i class="ph-bold ph-file-audio"></i> Audio</span>
+      <span class="strip-item"><i class="ph-bold ph-file-text"></i> Dokumen</span>
+      <span class="strip-dot" aria-hidden="true"></span>
+      <span class="strip-item"><i class="ph-bold ph-database"></i> Maks 200MB</span>
+      <span class="strip-dot" aria-hidden="true"></span>
+      <span class="strip-item"><i class="ph-bold ph-lock-open"></i> Tanpa daftar</span>
+    </div>
+  </section>
+
+  <!-- TOOL -->
+  <section id="upload" class="section wrap">
+    <p class="eyebrow">Tool gratis</p>
+    <h2>Upload file Anda sekarang.</h2>
+    <p class="lead">Seret file ke bawah, tunggu progress selesai, salin linknya.</p>
+
+    <div class="tool-grid">
+      <div class="card uploader">
+        <div id="drop" class="drop" role="button" tabindex="0" aria-label="Upload file">
+          <input id="fileInput" type="file" hidden>
+          <div class="drop-idle" id="dropIdle">
+            <span class="drop-icon"><i class="ph-bold ph-cloud-arrow-up"></i></span>
+            <p class="drop-title">Seret file ke sini atau <button type="button" class="link" id="browseBtn">pilih file</button></p>
+            <p class="drop-sub">Gambar, video, audio, dokumen hingga 200MB</p>
+          </div>
+          <div class="drop-preview" id="dropPreview" hidden>
+            <div class="file-row">
+              <span class="demo-ico" id="fileIco"><i class="ph-bold ph-file"></i></span>
+              <div class="demo-meta">
+                <p class="demo-name" id="fileName">file</p>
+                <p class="mono demo-sub" id="fileSub"></p>
+              </div>
+              <button type="button" id="changeBtn" class="btn btn-ghost btn-sm"><i class="ph-bold ph-repeat"></i> Ganti</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="progress" id="progress" hidden>
+          <div class="progress-top"><span class="mono" id="progressLabel">Mengupload… 0%</span><span class="mono" id="progressSize"></span></div>
+          <div class="progress-bar" aria-hidden="true"><span id="progressFill"></span></div>
+        </div>
+
+        <button id="goBtn" class="btn btn-primary btn-lg btn-block" type="button" disabled>
+          <i class="ph-bold ph-cloud-arrow-up"></i> Upload ke Catbox
+        </button>
+        <p class="err" id="errBox" role="alert" hidden></p>
+        <p class="mono status-line" id="statusLine">Siap. Pilih file untuk mulai.</p>
+      </div>
+
+      <div class="card result" aria-live="polite">
+        <div class="result-empty" id="resultEmpty">
+          <span class="drop-icon"><i class="ph-bold ph-link"></i></span>
+          <p class="drop-title">Link muncul di sini</p>
+          <p class="drop-sub">Plus tombol salin, buka, dan riwayat upload.</p>
+        </div>
+        <div class="result-done" id="resultDone" hidden>
+          <p class="field">Link file Anda</p>
+          <div class="link-box">
+            <a id="resLink" class="mono" href="#" target="_blank" rel="noopener">-</a>
+          </div>
+          <div class="result-act">
+            <button id="copyBtn" class="btn btn-primary" type="button"><i class="ph-bold ph-copy"></i> Salin Link</button>
+            <a id="openBtn" class="btn btn-ghost" href="#" target="_blank" rel="noopener"><i class="ph-bold ph-arrow-square-out"></i> Buka</a>
+          </div>
+          <p class="mono status-line" id="resMeta"></p>
+        </div>
+        <div class="history">
+          <div class="hist-head"><p class="field" style="margin:0">Riwayat perangkat ini</p><button id="clearHist" class="link" type="button">Hapus</button></div>
+          <ul id="histList" class="hist-list"><li class="hist-empty mono">Belum ada upload.</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARA KERJA asimetris -->
+  <section id="cara" class="section wrap">
+    <h2>Tiga langkah, tanpa daftar.</h2>
+    <p class="lead">File dikirim ke Catbox.moe lewat backend agar cepat dan stabil.</p>
+    <div class="how">
+      <div class="card how-big">
+        <img src="https://picsum.photos/seed/noisy-uploader/900/520" alt="Ilustrasi upload file ke cloud" loading="lazy">
+        <div class="how-body">
+          <p class="mono step-no">01</p>
+          <h3>Pilih file</h3>
+          <p>Seret file atau klik pilih. Nama, ukuran, dan tipe langsung tampil. Batas 200MB per file, format umum didukung.</p>
+        </div>
+      </div>
+      <div class="how-side">
+        <div class="card how-small">
+          <p class="mono step-no">02</p>
+          <h3>Upload dengan progress</h3>
+          <p>Backend meneruskan ke <span class="mono">catbox.moe/user/api.php</span> dengan progress persen real-time.</p>
+        </div>
+        <div class="card how-small">
+          <p class="mono step-no">03</p>
+          <h3>Salin dan bagikan</h3>
+          <p>Link <span class="mono">files.catbox.moe</span> permanen langsung bisa dibuka dan dibagikan ke siapa saja.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMAT: grouped chunks -->
+  <section id="format" class="section wrap">
+    <h2>Format yang didukung.</h2>
+    <p class="lead">File executable (.exe, .bat, .msi, dan sejenisnya) diblokir demi keamanan.</p>
+    <div class="fmt-grid">
+      <div class="card"><h3><i class="ph-bold ph-file-image"></i> Gambar</h3><p class="mono">JPG • PNG • GIF • WEBP • SVG</p></div>
+      <div class="card"><h3><i class="ph-bold ph-file-video"></i> Video</h3><p class="mono">MP4 • WEBM</p></div>
+      <div class="card"><h3><i class="ph-bold ph-file-audio"></i> Audio</h3><p class="mono">MP3 • WAV • OGG</p></div>
+      <div class="card"><h3><i class="ph-bold ph-file-text"></i> Dokumen</h3><p class="mono">PDF • TXT • JSON • HTML • CSS • JS</p></div>
+      <div class="card"><h3><i class="ph-bold ph-file-archive"></i> Arsip</h3><p class="mono">ZIP • RAR • 7Z</p></div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="section wrap narrow">
+    <h2>Pertanyaan umum.</h2>
+    <div class="faq">
+      <div class="card faq-item open">
+        <button class="faq-q" type="button" aria-expanded="true">Apakah gratis dan perlu daftar?<i class="ph-bold ph-caret-down"></i></button>
+        <div class="faq-a"><div class="faq-a-in"><p>Gratis dan tanpa daftar. Upload anonim ke Catbox hingga 200MB per file.</p></div></div>
+      </div>
+      <div class="card faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">Berapa lama link aktif?<i class="ph-bold ph-caret-down"></i></button>
+        <div class="faq-a"><div class="faq-a-in"><p>Link files.catbox.moe bersifat permanen selama tidak melanggar aturan Catbox. Simpan link baik-baik karena riwayat hanya tersimpan di browser ini.</p></div></div>
+      </div>
+      <div class="card faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">File apa yang ditolak?<i class="ph-bold ph-caret-down"></i></button>
+        <div class="faq-a"><div class="faq-a-in"><p>Executable seperti .exe, .bat, .cmd, .msi, dan .ps1 diblokir. File di atas 200MB juga ditolak server.</p></div></div>
+      </div>
+      <div class="card faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">Apakah file saya privat?<i class="ph-bold ph-caret-down"></i></button>
+        <div class="faq-a"><div class="faq-a-in"><p>Siapa pun yang punya link bisa membuka file. Jangan upload data sangat sensitif dan jangan bagikan link ke orang yang tidak dikenal.</p></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap foot-in">
+    <p class="brand-text">Noisy <strong>Uploader</strong></p>
+    <div class="foot-links">
+      <a href="/privacy.html" target="_blank" rel="noopener">Kebijakan Privasi</a>
+      <span aria-hidden="true">•</span>
+      <a href="/terms.html" target="_blank" rel="noopener">Ketentuan Layanan</a>
+    </div>
+    <p class="foot-sub">Upload cepat dengan link permanen. Gratis tanpa daftar, maksimal 200MB per file.</p>
+    <p class="mono foot-meta" id="healthMeta">© 2026 Noisy Uploader • v1.0</p>
+  </div>
+</footer>
+
+<script src="/app.js?v=2"></script>
+</body>
+</html>

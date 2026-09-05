@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Noisy Uploader V2 | Upload File, Dapat Link Instan</title>
+  <meta name="description" content="Upload gambar, video, audio, dan dokumen. Dapat link Catbox permanen dalam detik. Gratis, tanpa daftar.">
+  <meta name="theme-color" content="#09090b">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('noisy-theme');
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.dataset.theme = t;
+      } catch (e) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>

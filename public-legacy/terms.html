@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ketentuan Layanan — Noisy Uploader</title>
+<meta name="description" content="Ketentuan layanan Noisy Uploader Online.">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<link rel="stylesheet" href="/styles.css?v=4">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true"><i class="ph-bold ph-cloud-arrow-up"></i></span>
+      <span class="brand-text">Noisy <strong>Uploader</strong></span>
+    </a>
+    <div class="nav-act">
+      <button id="themeBtn" class="icon-btn" aria-label="Ganti tema"><i class="ph-bold ph-moon"></i></button>
+      <a href="/" class="btn btn-ghost"><i class="ph-bold ph-arrow-left"></i> Beranda</a>
+    </div>
+  </div>
+</header>
+<main class="wrap legal">
+  <p class="eyebrow"><i class="ph-bold ph-file-text"></i> Ketentuan layanan</p>
+  <h1>Ketentuan Layanan.</h1>
+  <p class="lead">Terakhir diperbarui: September 2026. Dengan memakai layanan ini, Anda menyetujui ketentuan berikut.</p>
+  <div class="card legal-card">
+    <h2>Layanan</h2>
+    <p>Noisy Uploader menyediakan upload file anonim gratis hingga 200MB per file dengan link publik permanen dari Catbox.moe.</p>
+    <h2>Aturan pakai</h2>
+    <p>Dilarang mengupload konten ilegal, malware, atau file yang melanggar hak cipta dan privasi orang lain. Ekstensi executable (.exe, .bat, .msi, dan sejenisnya) diblokir otomatis.</p>
+    <h2>Ketersediaan link</h2>
+    <p>Kepermanenan link mengikuti kebijakan Catbox.moe. Kami tidak menjamin file tersimpan selamanya dan dapat menghapus akses bila ada penyalahgunaan.</p>
+    <h2>Batas tanggung jawab</h2>
+    <p>Layanan diberikan apa adanya tanpa jaminan. Anda bertanggung jawab atas file yang diupload dan link yang dibagikan.</p>
+    <h2>Perubahan</h2>
+    <p>Ketentuan ini dapat diperbarui sewaktu-waktu. Versi terbaru selalu tampil di halaman ini.</p>
+  </div>
+</main>
+<footer class="footer">
+  <div class="wrap foot-in">
+    <p class="brand-text">Noisy <strong>Uploader</strong></p>
+    <div class="foot-links">
+      <a href="/privacy.html" target="_blank" rel="noopener">Kebijakan Privasi</a>
+      <span aria-hidden="true">•</span>
+      <a href="/terms.html" target="_blank" rel="noopener">Ketentuan Layanan</a>
+    </div>
+    <p class="mono foot-meta">© 2026 Noisy Uploader • v1.0</p>
+  </div>
+</footer>
+<script>
+(function(){var t=null;try{t=localStorage.getItem('noisy-theme')}catch(e){}
+if(!t&&matchMedia('(prefers-color-scheme: light)').matches)t='light';
+document.documentElement.dataset.theme=t||'dark';
+var b=document.getElementById('themeBtn');
+function paint(){b.innerHTML=document.documentElement.dataset.theme==='dark'?'<i class="ph-bold ph-moon"></i>':'<i class="ph-bold ph-sun"></i>'}
+paint();
+b.addEventListener('click',function(){var n=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('noisy-theme',n)}catch(e){}paint()})})();
+</script>
+</body>
+</html>
