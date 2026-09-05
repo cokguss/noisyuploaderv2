@@ -284,23 +284,34 @@ app.post('/api/catbox-upload', rateLimit({ windowMs: 60000, max: 10 }), catboxUp
     let remoteSize = null;
     let remoteType = null;
     try {
-      // HEAD catbox selalu content-length 0; pakai Range GET utk ukuran asli.
-      const head = await axios.get(url, {
-        headers: { 'User-Agent': CATBOX_UA, Range: 'bytes=0-0' },
-        timeout: 15000,
-        maxRedirects: 5,
-        responseType: 'arraybuffer',
-        validateStatus: () => true
-      });
-      remoteType = head.headers['content-type'] || null;
-      if (head.status === 206) {
-        const m = /\/\d+$/.exec(String(head.headers['content-range'] || ''));
-        if (m) remoteSize = parseInt(m[0].slice(1), 10);
-      } else if (head.status === 200) {
+      // Verifikasi ukuran: catbox bisa flaky (balas kosong sesaat). Ulangi sebelum
+      // menyimpulkan file kosong, supaya tidak ada false positive "0 byte".
+      for (let v = 1; v <= 3; v++) {
+        const head = await axios.get(url, {
+          headers: { 'User-Agent': CATBOX_UA, Range: 'bytes=0-0' },
+          timeout: 15000,
+          maxRedirects: 5,
+          responseType: 'arraybuffer',
+          validateStatus: () => true
+        });
+        remoteType = head.headers['content-type'] || null;
         const cl = parseInt(head.headers['content-length'], 10);
-        if (!Number.isNaN(cl)) remoteSize = cl; // 0 = file kosong
-      } else if (head.status === 404) {
-        remoteSize = 0; // link mati
+        if (head.status === 206) {
+          const m = /\/\d+$/.exec(String(head.headers['content-range'] || ''));
+          if (m) {
+            remoteSize = parseInt(m[0].slice(1), 10);
+            break;
+          }
+        } else if (head.status === 404) {
+          remoteSize = 0;
+          break;
+        } else if (head.status === 200 && !Number.isNaN(cl) && cl > 0) {
+          remoteSize = cl;
+          break;
+        }
+        // 200 + length 0/undefined = ambigu (flaky) — coba lagi; 3x berturut 0 = benar kosong
+        if (v === 3) remoteSize = cl === 0 ? 0 : null;
+        if (v < 3) await new Promise((res) => setTimeout(res, 700));
       }
     } catch { /* abaikan, link tetap valid */ }
     res.json({
