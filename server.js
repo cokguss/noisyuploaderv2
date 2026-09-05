@@ -253,23 +253,25 @@ app.post('/api/catbox-upload', rateLimit({ windowMs: 60000, max: 10 }), catboxUp
       const form = new FormData();
       form.append('reqtype', 'fileupload');
       form.append('fileToUpload', fs.createReadStream(tmpPath), { filename: req.file.originalname || 'file' });
+      const viaProxy = attempt > 1 && proxies.length > 0;
       const cfg = {
         headers: { ...form.getHeaders(), 'User-Agent': CATBOX_UA, Referer: 'https://catbox.moe/' },
-        timeout: 120000,
+        // timeout ketat agar muat dalam batas durasi serverless (Vercel hobby 60s)
+        timeout: viaProxy ? 15000 : 20000,
         maxBodyLength: Infinity,
         maxContentLength: Infinity,
         validateStatus: () => true
       };
-      if (attempt > 1 && proxies.length) {
+      if (viaProxy) {
         cfg.proxy = proxies[Math.floor(Math.random() * proxies.length)];
       }
       let r;
       try {
         r = await axios.post(CATBOX_URL, form, cfg);
       } catch (e) {
-        lastRaw = (cfg.proxy ? 'via-proxy ' : '') + (e.code || e.message);
+        lastRaw = (viaProxy ? 'via-proxy ' : '') + (e.code || e.message);
         if (attempt < 3) {
-          await new Promise((res) => setTimeout(res, 1200));
+          await new Promise((res) => setTimeout(res, 1000));
           continue;
         }
         break;
@@ -277,11 +279,11 @@ app.post('/api/catbox-upload', rateLimit({ windowMs: 60000, max: 10 }), catboxUp
       const candidate = (typeof r.data === 'string' ? r.data.trim() : '').split('\n')[0];
       if (r.status === 200 && candidate.startsWith('http')) {
         url = candidate;
-        if (cfg.proxy) console.log('[catbox] sukses via proxy');
+        if (viaProxy) console.log('[catbox] sukses via proxy');
         break;
       }
       lastRaw = String(r.data || '').slice(0, 300);
-      if (attempt < 3) await new Promise((res) => setTimeout(res, 1200));
+      if (attempt < 3) await new Promise((res) => setTimeout(res, 1000));
     }
     const elapsedMs = Date.now() - t0;
     if (!url) {
