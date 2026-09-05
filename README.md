@@ -98,13 +98,18 @@ noisyuploaderv2/
 | Frontend (statis) | Static hosting | Vercel, Netlify, GitHub Pages |
 | API Express | Node.js runtime | Vercel (serverless), Render, Railway, VPS |
 
-**Langkah deploy:**
+**Langkah deploy (dua opsi):**
 
-1. Jalankan `npm run build`, lalu hosting folder `dist/`.
-2. Deploy `server.js` sebagai layanan Node (atur `PORT` sesuai platform).
-3. Arahkan proxy `/api` di frontend ke URL API, atau deploy dua-duanya sekaligus via `vercel.json`.
+**Opsi A — All-in-Vercel** (cocok untuk file kecil, ±4MB di plan gratis):
+1. Import repo ini di Vercel — `vercel.json` sudah disiapkan (build `npm run build`, API di `api/index.js`).
+2. Set environment variable `TRUST_PROXY=true` (wajib agar rate limit memakai IP asli pengguna).
 
-> Tanpa API, halaman tetap tampil tapi **upload tidak berfungsi** — pastikan keduanya ter-deploy.
+**Opsi B — Frontend di Vercel + API di Render/Railway/VPS** (file besar hingga 200MB):
+1. Deploy `server.js` sebagai layanan Node (atur `PORT` sesuai platform), set `TRUST_PROXY=true`.
+2. Di Vercel, set env build `VITE_API_BASE=https://url-api-anda`.
+3. Import repo di Vercel — frontend akan memanggil API di URL tersebut.
+
+> Catatan: plan gratis Vercel membatasi body request serverless ±4.5MB — upload besar wajib lewat opsi B.
 
 ## ⚠️ Catatan
 
