@@ -243,29 +243,45 @@ app.post('/api/catbox-upload', rateLimit({ windowMs: 60000, max: 10 }), catboxUp
   const tmpPath = req.file?.path;
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'File wajib diisi (maks 200MB)' });
-    const form = new FormData();
-    form.append('reqtype', 'fileupload');
-    form.append('fileToUpload', fs.createReadStream(tmpPath), { filename: req.file.originalname || 'file' });
     const t0 = Date.now();
-    // Catbox kadang membalas 200 dengan body kosong (flaky/rate-limit sesaat).
-    // Retry 3x dengan jeda singkat; ulangan hampir selalu sukses.
+    // Catbox kadang membalas 200 kosong (flaky) dan kadang memutus koneksi dari IP datacenter
+    // (mis. serverless Vercel). Strategi: coba langsung, lalu fallback lewat proxy pool.
+    const proxies = await fetchProxies();
     let url = '';
     let lastRaw = '';
     for (let attempt = 1; attempt <= 3; attempt++) {
-      const r = await axios.post(CATBOX_URL, form, {
+      const form = new FormData();
+      form.append('reqtype', 'fileupload');
+      form.append('fileToUpload', fs.createReadStream(tmpPath), { filename: req.file.originalname || 'file' });
+      const cfg = {
         headers: { ...form.getHeaders(), 'User-Agent': CATBOX_UA, Referer: 'https://catbox.moe/' },
         timeout: 120000,
         maxBodyLength: Infinity,
         maxContentLength: Infinity,
         validateStatus: () => true
-      });
+      };
+      if (attempt > 1 && proxies.length) {
+        cfg.proxy = proxies[Math.floor(Math.random() * proxies.length)];
+      }
+      let r;
+      try {
+        r = await axios.post(CATBOX_URL, form, cfg);
+      } catch (e) {
+        lastRaw = (cfg.proxy ? 'via-proxy ' : '') + (e.code || e.message);
+        if (attempt < 3) {
+          await new Promise((res) => setTimeout(res, 1200));
+          continue;
+        }
+        break;
+      }
       const candidate = (typeof r.data === 'string' ? r.data.trim() : '').split('\n')[0];
       if (r.status === 200 && candidate.startsWith('http')) {
         url = candidate;
+        if (cfg.proxy) console.log('[catbox] sukses via proxy');
         break;
       }
       lastRaw = String(r.data || '').slice(0, 300);
-      if (attempt < 3) await new Promise((res) => setTimeout(res, 1500));
+      if (attempt < 3) await new Promise((res) => setTimeout(res, 1200));
     }
     const elapsedMs = Date.now() - t0;
     if (!url) {
