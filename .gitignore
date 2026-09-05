@@ -19,3 +19,4 @@ dist/
 *.local
 e2e-up.txt
 .claude/
+.agents/
